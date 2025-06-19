@@ -1,7 +1,5 @@
 # Source files
 src/
-tsconfig.json
-rollup.config.mjs
 
 # Development files
 .git/
@@ -31,10 +29,7 @@ ehthumbs.db
 Thumbs.db
 
 # Test files
-**/*.test.*
-**/*.spec.*
-coverage/
-.nyc_output/
+*.test.*
 
 # Build artifacts (keep dist/)
 *.tsbuildinfo
@@ -48,3 +43,14 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Additional files
+tsconfig.json
+rollup.config.mjs
+.github/
+package-lock.json
+PUBLISHING_GUIDE.md
+CHANGELOG.md
+coverage/
+__tests__/
+*.map

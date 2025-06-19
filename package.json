@@ -1,0 +1,99 @@
+{
+  "name": "@appletosolutions/reactbits",
+  "version": "1.0.0",
+  "description": "A comprehensive collection of beautiful, performant React animation components including bounce effects, click sparks, star borders, scroll-triggered animations, and fade transitions.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/index.css": "./dist/index.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/appletosolutions/reactbits.git"
+  },
+  "homepage": "https://github.com/appletosolutions/reactbits#readme",
+  "bugs": {
+    "url": "https://github.com/appletosolutions/reactbits/issues"
+  },
+  "author": {
+    "name": "Appleto Solutions",
+    "url": "https://appletosolutions.com"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "keywords": [
+    "react",
+    "animations",
+    "reactbits",
+    "components",
+    "ui",
+    "gsap",
+    "scroll-trigger",
+    "fade",
+    "bounce",
+    "click-effects",
+    "star-border",
+    "canvas-animation",
+    "intersection-observer",
+    "typescript",
+    "modern-react"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/matter-js": "^0.19.8",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.8",
+    "@types/three": "^0.177.0",
+    "jest": "^29.0.0",
+    "jest-environment-jsdom": "^30.0.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "ts-jest": "^29.0.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.21.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@motionone/types": "^10.17.1",
+    "@react-three/drei": "^10.3.0",
+    "@react-three/fiber": "^9.1.2",
+    "@react-three/postprocessing": "^3.0.4",
+    "@react-three/rapier": "^2.1.0",
+    "framer-motion": "^12.18.1",
+    "gl-matrix": "^3.4.3",
+    "gsap": "^3.13.0",
+    "matter-js": "^0.20.0",
+    "meshline": "^3.3.1",
+    "ogl": "^1.0.11",
+    "postprocessing": "^6.37.4",
+    "react-icons": "^5.5.0",
+    "three": "^0.177.0",
+    "three-stdlib": "^2.36.0"
+  }
+}

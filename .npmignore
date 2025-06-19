@@ -1,0 +1,50 @@
+# Source files
+src/
+tsconfig.json
+rollup.config.mjs
+
+# Development files
+.git/
+.gitignore
+node_modules/
+*.log
+*.lock
+
+# Documentation (keep README.md and LICENSE)
+examples.md
+CONTRIBUTING.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test files
+**/*.test.*
+**/*.spec.*
+coverage/
+.nyc_output/
+
+# Build artifacts (keep dist/)
+*.tsbuildinfo
+
+# Build outputs
+dist/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

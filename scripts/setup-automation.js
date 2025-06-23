@@ -5,9 +5,13 @@
  * Initializes Git hooks, installs dependencies, and configures automation
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Colors for console output
 const colors = {
@@ -59,7 +63,7 @@ function checkPrerequisites() {
 
 function installDependencies() {
   log('📦 Installing automation dependencies...', 'yellow');
-  
+
   const devDeps = [
     '@commitlint/cli',
     '@commitlint/config-conventional',
@@ -67,8 +71,8 @@ function installDependencies() {
     'lint-staged',
     'standard-version'
   ];
-  
-  exec(`npm install --save-dev ${devDeps.join(' ')}`);
+
+  exec(`npm install --save-dev --legacy-peer-deps ${devDeps.join(' ')}`);
   log('✅ Dependencies installed', 'green');
 }
 
@@ -186,7 +190,7 @@ function showCommitExamples() {
 // Main setup process
 async function main() {
   log('🚀 Setting up ReactBits automation...', 'bright');
-  
+
   try {
     checkPrerequisites();
     installDependencies();
@@ -216,6 +220,5 @@ if (args.includes('--help') || args.includes('-h')) {
   process.exit(0);
 }
 
-if (require.main === module) {
-  main();
-}
+// Always run the main function when script is executed directly
+main();

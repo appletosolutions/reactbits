@@ -22,15 +22,15 @@ if [ -z "$husky_skip_init" ]; then
   readonly husky_skip_init=1
   export husky_skip_init
   sh -e "$0" "$@"
-  exitcode="$?"
+  exitCode="$?"
 
-  if [ $exitcode != 0 ]; then
-    echo "husky - $hook_name hook exited with code $exitcode (error)"
+  if [ $exitCode != 0 ]; then
+    echo "husky - $hook_name hook exited with code $exitCode (error)"
   fi
 
-  if [ $exitcode = 127 ]; then
+  if [ $exitCode = 127 ]; then
     echo "husky - command not found in PATH=$PATH"
   fi
 
-  exit $exitcode
+  exit $exitCode
 fi

@@ -1,9 +1,17 @@
 name: Release and Publish
 
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
 
 jobs:
   test:
@@ -33,7 +41,6 @@ jobs:
   release:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,21 +69,19 @@ jobs:
       - name: Generate changelog and bump version
         id: changelog
         run: |
-          # Install standard-version if not in package.json
-          npm install --no-save standard-version
-          
-          # Generate changelog and bump version
-          npx standard-version --skip.commit --skip.tag
-          
+          # Install standard-version globally
+          npm install -g standard-version
+
+          # Generate changelog and bump version based on input
+          RELEASE_TYPE="${{ github.event.inputs.release_type || 'patch' }}"
+          npx standard-version --release-as $RELEASE_TYPE --skip.commit --skip.tag
+
           # Get the new version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          
-          # Get changelog content for this version
-          CHANGELOG_CONTENT=$(sed -n "/## \[$NEW_VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d')
-          echo "changelog_content<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Create simple changelog content
+          echo "changelog_content=Release v$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
         run: |

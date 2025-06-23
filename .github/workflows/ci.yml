@@ -40,19 +40,25 @@ jobs:
 
       - name: Check bundle size
         run: |
-          npm run build
           echo "📦 Bundle sizes:"
           ls -lh dist/
 
           # Check if bundle is reasonable size (adjust threshold as needed)
-          BUNDLE_SIZE=$(stat -f%z dist/index.js 2>/dev/null || stat -c%s dist/index.js)
-          MAX_SIZE=1048576  # 1MB in bytes
+          if [ -f "dist/index.js" ]; then
+            BUNDLE_SIZE=$(du -b dist/index.js | cut -f1)
+            MAX_SIZE=1048576  # 1MB in bytes
 
-          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
-            echo "❌ Bundle size ($BUNDLE_SIZE bytes) exceeds maximum ($MAX_SIZE bytes)"
-            exit 1
+            echo "Bundle size: $BUNDLE_SIZE bytes"
+            if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
+              echo "❌ Bundle size ($BUNDLE_SIZE bytes) exceeds maximum ($MAX_SIZE bytes)"
+              exit 1
+            else
+              echo "✅ Bundle size ($BUNDLE_SIZE bytes) is within limits"
+            fi
           else
-            echo "✅ Bundle size ($BUNDLE_SIZE bytes) is within limits"
+            echo "❌ dist/index.js not found"
+            ls -la dist/
+            exit 1
           fi
 
   security:

@@ -7,6 +7,55 @@ import postcss from "rollup-plugin-postcss";
 import terser from "@rollup/plugin-terser";
 import { createFilter } from "@rollup/pluginutils";
 
+// List of external dependencies that should never be bundled
+const EXTERNAL_DEPS = [
+  // React core
+  "react",
+  "react-dom",
+  "react/jsx-runtime",
+
+  // Animation libraries
+  "gsap",
+  "gsap/ScrollTrigger",
+  "gsap/TextPlugin",
+  "framer-motion",
+
+  // Three.js ecosystem
+  "three",
+  "three-stdlib",
+  "@react-three/fiber",
+  "@react-three/drei",
+  "@react-three/postprocessing",
+  "@react-three/rapier",
+
+  // UI libraries
+  "@chakra-ui/react",
+  "@emotion/react",
+  "@emotion/styled",
+
+  // Physics and graphics
+  "matter-js",
+  "postprocessing",
+  "meshline",
+  "ogl",
+  "gl-matrix",
+
+  // Motion types
+  "@motionone/types"
+];
+
+// Function to determine if a module should be external
+function isExternal(id) {
+  // Check exact matches
+  if (EXTERNAL_DEPS.includes(id)) return true;
+
+  // Check for three.js submodules
+  if (id.startsWith('three/examples/jsm/')) return true;
+
+  // Check for any of our external packages
+  return EXTERNAL_DEPS.some(dep => id.startsWith(dep + '/'));
+}
+
 // Custom plugin to handle "use client" directives
 function removeUseClientDirectives() {
   const filter = createFilter(['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx']);
@@ -47,30 +96,24 @@ export default {
       sourcemap: true,
     },
   ],
-  external: [
-    "react",
-    "react-dom",
-    "react/jsx-runtime",
-    "gsap",
-    "gsap/ScrollTrigger",
-    "three",
-    "three/examples/jsm/controls/OrbitControls",
-    "three/examples/jsm/loaders/GLTFLoader",
-    "@react-three/fiber",
-    "@react-three/drei",
-    "@react-three/postprocessing",
-    "@react-three/rapier",
-    "framer-motion",
-    "@chakra-ui/react",
-    "@emotion/react",
-    "@emotion/styled",
-    "matter-js",
-    "postprocessing",
-    "meshline",
-    "ogl",
-    "gl-matrix",
-    "three-stdlib"
-  ],
+  external: (id) => {
+    // Use our function first
+    if (isExternal(id)) return true;
+
+    // Additional explicit checks for problematic packages
+    const problematicPackages = [
+      'matter-js',
+      '@react-three/fiber',
+      '@react-three/drei',
+      'ogl',
+      'three-stdlib',
+      'gl-matrix',
+      '@react-three/postprocessing',
+      'postprocessing'
+    ];
+
+    return problematicPackages.some(pkg => id === pkg || id.startsWith(pkg + '/'));
+  },
   onwarn(warning, warn) {
     // Suppress circular dependency warnings for known safe cases
     if (warning.code === 'CIRCULAR_DEPENDENCY') {
@@ -90,22 +133,44 @@ export default {
   },
   plugins: [
     removeUseClientDirectives(),
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true
+    }),
     nodeResolve({
       browser: true,
       preferBuiltins: false,
       exportConditions: ['import', 'module', 'default'],
       skip: [
+        // React core
         'react',
         'react-dom',
+
+        // Animation libraries
+        'gsap',
+        'framer-motion',
+
+        // Three.js ecosystem
         'three',
+        'three-stdlib',
         '@react-three/fiber',
         '@react-three/drei',
-        'framer-motion',
+        '@react-three/postprocessing',
+        '@react-three/rapier',
+
+        // UI libraries
         '@chakra-ui/react',
         '@emotion/react',
         '@emotion/styled',
-        'gsap'
+
+        // Physics and graphics
+        'matter-js',
+        'postprocessing',
+        'meshline',
+        'ogl',
+        'gl-matrix',
+
+        // Motion types
+        '@motionone/types'
       ]
     }),
     commonjs(),

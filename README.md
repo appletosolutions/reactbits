@@ -84,25 +84,52 @@ npm install framer-motion
 
 ### ⚠️ Troubleshooting
 
-**React Version Conflicts**: If you encounter errors like `Ts2 is undefined` or React reconciler issues:
+**Dependency Resolution Errors**: If you encounter "Could not resolve" errors for dependencies like `matter-js`, `@react-three/fiber`, etc.:
 
 ```bash
-# Use --legacy-peer-deps flag
+# Install only the peer dependencies you need
+npm install three @react-three/fiber @react-three/drei  # For 3D components
+npm install matter-js                                   # For physics components
+npm install gsap                                        # For GSAP animations
+
+# Use --legacy-peer-deps if needed
 npm install @appletosolutions/reactbits --legacy-peer-deps
-
-# Or with yarn
-yarn add @appletosolutions/reactbits --ignore-peer-deps
 ```
 
-**Missing Dependencies**: Components will gracefully degrade if optional dependencies are missing:
+**Bundle Size Optimization**: ReactBits uses peer dependencies to keep your bundle small:
 
-```jsx
-// This will work even without Three.js installed
-import { Bounce } from '@appletosolutions/reactbits';
+```bash
+# Check what's included in your bundle
+npm run build -- --analyze  # For Create React App with bundle analyzer
 
-// This requires Three.js
-import { ModelViewer } from '@appletosolutions/reactbits';
+# Only install dependencies for components you use
+npm install gsap              # Only if using GSAP-powered components
+npm install three             # Only if using 3D components
 ```
+
+**TypeScript Errors**: Ensure you have the correct type definitions:
+
+```bash
+npm install --save-dev @types/three @types/matter-js
+```
+
+**Framework-Specific Issues**:
+
+- **Next.js**: Add to `next.config.js`:
+  ```js
+  module.exports = {
+    transpilePackages: ['@appletosolutions/reactbits']
+  }
+  ```
+
+- **Vite**: Add to `vite.config.ts`:
+  ```js
+  export default defineConfig({
+    optimizeDeps: {
+      include: ['@appletosolutions/reactbits']
+    }
+  })
+  ```
 
 ## 🚀 Quick Start
 

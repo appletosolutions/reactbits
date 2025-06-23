@@ -1,6 +1,6 @@
 {
   "name": "@appletosolutions/reactbits",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A comprehensive collection of beautiful, performant React animation components including bounce effects, click sparks, star borders, scroll-triggered animations, and fade transitions.",
   "type": "module",
   "main": "dist/index.js",
@@ -61,7 +61,18 @@
     "@emotion/styled": "^11.0.0",
     "framer-motion": "^10.0.0 || ^11.0.0 || ^12.0.0",
     "gsap": "^3.0.0",
-    "three": "^0.150.0"
+    "three": "^0.150.0",
+    "@react-three/fiber": "^8.0.0 || ^9.0.0",
+    "@react-three/drei": "^9.0.0 || ^10.0.0",
+    "@react-three/postprocessing": "^2.0.0 || ^3.0.0",
+    "@react-three/rapier": "^1.0.0 || ^2.0.0",
+    "matter-js": "^0.19.0 || ^0.20.0",
+    "postprocessing": "^6.0.0",
+    "meshline": "^3.0.0",
+    "ogl": "^1.0.0",
+    "gl-matrix": "^3.0.0",
+    "three-stdlib": "^2.0.0",
+    "@motionone/types": "^10.0.0"
   },
   "peerDependenciesMeta": {
     "@chakra-ui/react": {
@@ -80,6 +91,39 @@
       "optional": true
     },
     "three": {
+      "optional": true
+    },
+    "@react-three/fiber": {
+      "optional": true
+    },
+    "@react-three/drei": {
+      "optional": true
+    },
+    "@react-three/postprocessing": {
+      "optional": true
+    },
+    "@react-three/rapier": {
+      "optional": true
+    },
+    "matter-js": {
+      "optional": true
+    },
+    "postprocessing": {
+      "optional": true
+    },
+    "meshline": {
+      "optional": true
+    },
+    "ogl": {
+      "optional": true
+    },
+    "gl-matrix": {
+      "optional": true
+    },
+    "three-stdlib": {
+      "optional": true
+    },
+    "@motionone/types": {
       "optional": true
     }
   },

@@ -1,0 +1,122 @@
+name: Release and Publish
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run build
+        run: npm run build
+
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Generate changelog and bump version
+        id: changelog
+        run: |
+          # Install standard-version if not in package.json
+          npm install --no-save standard-version
+          
+          # Generate changelog and bump version
+          npx standard-version --skip.commit --skip.tag
+          
+          # Get the new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Get changelog content for this version
+          CHANGELOG_CONTENT=$(sed -n "/## \[$NEW_VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d')
+          echo "changelog_content<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "chore(release): ${{ steps.changelog.outputs.new_version }}"
+          git tag "v${{ steps.changelog.outputs.new_version }}"
+          git push origin main --follow-tags
+
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.changelog.outputs.new_version }}
+          release_name: Release v${{ steps.changelog.outputs.new_version }}
+          body: |
+            ## Changes in v${{ steps.changelog.outputs.new_version }}
+            
+            ${{ steps.changelog.outputs.changelog_content }}
+            
+            ## Installation
+            ```bash
+            npm install @appletosolutions/reactbits@${{ steps.changelog.outputs.new_version }}
+            ```
+            
+            ## Links
+            - 📦 [NPM Package](https://www.npmjs.com/package/@appletosolutions/reactbits)
+            - 📖 [Documentation](https://github.com/appletosolutions/reactbits#readme)
+            - 🐛 [Report Issues](https://github.com/appletosolutions/reactbits/issues)
+          draft: false
+          prerelease: false
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Successfully released v${{ steps.changelog.outputs.new_version }}"
+          echo "📦 NPM: https://www.npmjs.com/package/@appletosolutions/reactbits"
+          echo "🏷️ GitHub: https://github.com/appletosolutions/reactbits/releases/tag/v${{ steps.changelog.outputs.new_version }}"

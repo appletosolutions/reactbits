@@ -21,8 +21,22 @@
   ],
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "npm run build",
-    "test": "jest"
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm test",
+    "release": "node scripts/release.js",
+    "release:dry": "standard-version --dry-run",
+    "release:patch": "npm run release",
+    "release:minor": "standard-version --release-as minor && npm run release",
+    "release:major": "standard-version --release-as major && npm run release",
+    "changelog": "standard-version --skip.bump --skip.commit --skip.tag",
+    "version": "standard-version",
+    "postversion": "git push --follow-tags origin main && npm publish --access public",
+    "setup:automation": "node scripts/setup-automation.js",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -59,6 +73,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-typescript": "^12.1.2",
@@ -68,8 +84,10 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.8",
     "@types/three": "^0.177.0",
+    "husky": "^8.0.3",
     "jest": "^29.0.0",
     "jest-environment-jsdom": "^30.0.1",
+    "lint-staged": "^15.2.0",
     "postcss": "^8.5.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -77,9 +95,26 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.0.0",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "tsc --noEmit",
+      "git add"
+    ],
+    "*.{js,jsx,ts,tsx,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   },
   "dependencies": {
     "@chakra-ui/react": "^3.21.0",

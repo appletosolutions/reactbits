@@ -4,7 +4,32 @@ import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import postcss from "rollup-plugin-postcss";
-import { terser } from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
+import { createFilter } from "@rollup/pluginutils";
+
+// Custom plugin to handle "use client" directives
+function removeUseClientDirectives() {
+  const filter = createFilter(['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx']);
+
+  return {
+    name: 'remove-use-client',
+    transform(code, id) {
+      if (!filter(id)) return null;
+
+      // Remove "use client" directives to prevent bundling warnings
+      const transformedCode = code.replace(/^['"]use client['"];?\s*/gm, '');
+
+      if (transformedCode !== code) {
+        return {
+          code: transformedCode,
+          map: null
+        };
+      }
+
+      return null;
+    }
+  };
+}
 
 export default {
   input: "src/index.tsx",
@@ -23,18 +48,39 @@ export default {
     },
   ],
   external: ["react", "react-dom", "gsap", "gsap/ScrollTrigger"],
+  onwarn(warning, warn) {
+    // Suppress circular dependency warnings for known safe cases
+    if (warning.code === 'CIRCULAR_DEPENDENCY') {
+      // Allow circular dependencies in @internationalized/date as they are safe
+      if (warning.message.includes('@internationalized/date')) {
+        return;
+      }
+    }
+
+    // Suppress "use client" directive warnings
+    if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+      return;
+    }
+
+    // Show other warnings
+    warn(warning);
+  },
   plugins: [
+    removeUseClientDirectives(),
     peerDepsExternal(),
     nodeResolve({
       browser: true,
       preferBuiltins: false,
+      exportConditions: ['import', 'module', 'default'],
     }),
     commonjs(),
     typescript({
       tsconfig: "./tsconfig.json",
       declaration: true,
       declarationDir: "dist",
-      exclude: ["**/*.test.*", "**/*.spec.*"],
+      exclude: ["**/*.test.*", "**/*.spec.*", "**/*.stories.*"],
+      sourceMap: true,
+      inlineSources: false,
     }),
     postcss({
       modules: false,
@@ -43,6 +89,18 @@ export default {
       minimize: true,
       use: ["sass"],
     }),
-    terser(),
+    terser({
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      format: {
+        comments: false,
+      },
+      mangle: {
+        reserved: ['React', 'ReactDOM'],
+      },
+    }),
   ],
 };

@@ -47,7 +47,30 @@ export default {
       sourcemap: true,
     },
   ],
-  external: ["react", "react-dom", "gsap", "gsap/ScrollTrigger"],
+  external: [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "gsap",
+    "gsap/ScrollTrigger",
+    "three",
+    "three/examples/jsm/controls/OrbitControls",
+    "three/examples/jsm/loaders/GLTFLoader",
+    "@react-three/fiber",
+    "@react-three/drei",
+    "@react-three/postprocessing",
+    "@react-three/rapier",
+    "framer-motion",
+    "@chakra-ui/react",
+    "@emotion/react",
+    "@emotion/styled",
+    "matter-js",
+    "postprocessing",
+    "meshline",
+    "ogl",
+    "gl-matrix",
+    "three-stdlib"
+  ],
   onwarn(warning, warn) {
     // Suppress circular dependency warnings for known safe cases
     if (warning.code === 'CIRCULAR_DEPENDENCY') {
@@ -72,6 +95,18 @@ export default {
       browser: true,
       preferBuiltins: false,
       exportConditions: ['import', 'module', 'default'],
+      skip: [
+        'react',
+        'react-dom',
+        'three',
+        '@react-three/fiber',
+        '@react-three/drei',
+        'framer-motion',
+        '@chakra-ui/react',
+        '@emotion/react',
+        '@emotion/styled',
+        'gsap'
+      ]
     }),
     commonjs(),
     typescript({

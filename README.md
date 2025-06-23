@@ -60,17 +60,48 @@ pnpm add @appletosolutions/reactbits
 
 ### Peer Dependencies
 
-For 3D components and advanced effects, install optional peer dependencies:
+ReactBits uses peer dependencies to avoid conflicts and reduce bundle size. Install only what you need:
 
 ```bash
+# Required for all components
+npm install react react-dom
+
 # For 3D components (ModelViewer, Aurora, etc.)
 npm install three @react-three/fiber @react-three/drei
 
-# For GSAP-powered animations
+# For GSAP-powered animations (Bounce, ScrollReveal, etc.)
 npm install gsap
 
-# For physics-based animations
+# For physics-based animations (Ballpit, etc.)
 npm install matter-js
+
+# For Chakra UI components (optional)
+npm install @chakra-ui/react @emotion/react @emotion/styled
+
+# For Framer Motion components (optional)
+npm install framer-motion
+```
+
+### ⚠️ Troubleshooting
+
+**React Version Conflicts**: If you encounter errors like `Ts2 is undefined` or React reconciler issues:
+
+```bash
+# Use --legacy-peer-deps flag
+npm install @appletosolutions/reactbits --legacy-peer-deps
+
+# Or with yarn
+yarn add @appletosolutions/reactbits --ignore-peer-deps
+```
+
+**Missing Dependencies**: Components will gracefully degrade if optional dependencies are missing:
+
+```jsx
+// This will work even without Three.js installed
+import { Bounce } from '@appletosolutions/reactbits';
+
+// This requires Three.js
+import { ModelViewer } from '@appletosolutions/reactbits';
 ```
 
 ## 🚀 Quick Start
